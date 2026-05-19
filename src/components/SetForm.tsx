@@ -17,12 +17,68 @@ type SetFormProps = {
   onAdd: (set: SetInput) => void;
 };
 
-const emptyForm: SetInput = {
-  exerciseName: '',
-  setNumber: 1,
-  reps: 0,
-  weightKg: 0,
+type FormState = {
+  exerciseName: string;
+  setNumber: string;
+  reps: string;
+  weightKg: string;
 };
+
+const emptyForm: FormState = {
+  exerciseName: '',
+  setNumber: '',
+  reps: '',
+  weightKg: '',
+};
+
+function suggestionsToForm(
+  exerciseName: string,
+  suggestions: { setNumber: number; reps: number; weightKg: number },
+): FormState {
+  return {
+    exerciseName,
+    setNumber: String(suggestions.setNumber),
+    reps: suggestions.reps > 0 ? String(suggestions.reps) : '',
+    weightKg: suggestions.weightKg > 0 ? String(suggestions.weightKg) : '',
+  };
+}
+
+function parseForm(form: FormState): { ok: true; input: SetInput } | { ok: false; message: string } {
+  const exerciseName = form.exerciseName.trim();
+
+  if (!exerciseName) {
+    return { ok: false, message: 'El nombre del ejercicio no puede estar vacío.' };
+  }
+
+  if (form.setNumber.trim() === '') {
+    return { ok: false, message: 'Indica el número de serie.' };
+  }
+
+  if (form.reps.trim() === '') {
+    return { ok: false, message: 'Indica las repeticiones.' };
+  }
+
+  if (form.weightKg.trim() === '') {
+    return { ok: false, message: 'Indica el peso.' };
+  }
+
+  const setNumber = Number(form.setNumber);
+  const reps = Number(form.reps);
+  const weightKg = Number(form.weightKg);
+
+  if (Number.isNaN(setNumber) || Number.isNaN(reps) || Number.isNaN(weightKg)) {
+    return { ok: false, message: 'Los valores numéricos no son válidos.' };
+  }
+
+  const input: SetInput = { exerciseName, setNumber, reps, weightKg };
+  const result = validateSetInput(input);
+
+  if (!result.ok) {
+    return result;
+  }
+
+  return { ok: true, input };
+}
 
 export default function SetForm({
   workoutSets,
@@ -32,7 +88,7 @@ export default function SetForm({
 }: SetFormProps) {
   const datalistId = useId();
   const repsRef = useRef<HTMLInputElement>(null);
-  const [form, setForm] = useState<SetInput>(emptyForm);
+  const [form, setForm] = useState<FormState>(emptyForm);
   const [error, setError] = useState('');
   const [hint, setHint] = useState('');
 
@@ -50,13 +106,7 @@ export default function SetForm({
       return;
     }
 
-    setForm((prev) => ({
-      ...prev,
-      exerciseName: trimmed,
-      setNumber: suggestions.setNumber,
-      reps: suggestions.reps,
-      weightKg: suggestions.weightKg,
-    }));
+    setForm(suggestionsToForm(trimmed, suggestions));
     setHint(formatSuggestionHint(suggestions));
   }
 
@@ -79,37 +129,25 @@ export default function SetForm({
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const input: SetInput = {
-      exerciseName: form.exerciseName.trim(),
-      setNumber: Number(form.setNumber),
-      reps: Number(form.reps),
-      weightKg: Number(form.weightKg),
-    };
-
-    const result = validateSetInput(input);
-    if (!result.ok) {
-      setError(result.message);
+    const parsed = parseForm(form);
+    if (!parsed.ok) {
+      setError(parsed.message);
       return;
     }
 
-    onAdd(input);
+    onAdd(parsed.input);
 
     const nextSuggestions = getExerciseSuggestions(
-      [...workoutSets, { id: 'pending', ...input }],
+      [...workoutSets, { id: 'pending', ...parsed.input }],
       loadWorkouts(),
-      input.exerciseName,
+      parsed.input.exerciseName,
     );
 
     if (nextSuggestions) {
-      setForm({
-        exerciseName: input.exerciseName,
-        setNumber: nextSuggestions.setNumber,
-        reps: nextSuggestions.reps,
-        weightKg: nextSuggestions.weightKg,
-      });
+      setForm(suggestionsToForm(parsed.input.exerciseName, nextSuggestions));
       setHint(formatSuggestionHint(nextSuggestions));
     } else {
-      setForm({ ...emptyForm, exerciseName: input.exerciseName });
+      setForm({ ...emptyForm, exerciseName: parsed.input.exerciseName });
       setHint('');
     }
 
@@ -118,7 +156,7 @@ export default function SetForm({
   }
 
   return (
-    <form className="set-form" onSubmit={handleSubmit}>
+    <form className="card set-form" onSubmit={handleSubmit}>
       <h2 className="section-title">Añadir serie</h2>
 
       <label className="form-field">
@@ -131,7 +169,6 @@ export default function SetForm({
           autoComplete="off"
           onChange={(e) => setForm({ ...form, exerciseName: e.target.value })}
           onBlur={handleExerciseBlur}
-          required
         />
         <datalist id={datalistId}>
           {exerciseNames.map((name) => (
@@ -147,9 +184,9 @@ export default function SetForm({
             type="number"
             inputMode="numeric"
             min={1}
+            placeholder="1"
             value={form.setNumber}
-            onChange={(e) => setForm({ ...form, setNumber: Number(e.target.value) })}
-            required
+            onChange={(e) => setForm({ ...form, setNumber: e.target.value })}
           />
         </label>
 
@@ -160,9 +197,9 @@ export default function SetForm({
             type="number"
             inputMode="numeric"
             min={0}
+            placeholder="0"
             value={form.reps}
-            onChange={(e) => setForm({ ...form, reps: Number(e.target.value) })}
-            required
+            onChange={(e) => setForm({ ...form, reps: e.target.value })}
           />
         </label>
 
@@ -173,9 +210,9 @@ export default function SetForm({
             inputMode="decimal"
             min={0}
             step="0.5"
+            placeholder="0"
             value={form.weightKg}
-            onChange={(e) => setForm({ ...form, weightKg: Number(e.target.value) })}
-            required
+            onChange={(e) => setForm({ ...form, weightKg: e.target.value })}
           />
         </label>
       </div>

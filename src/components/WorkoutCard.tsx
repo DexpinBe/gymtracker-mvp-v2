@@ -12,9 +12,14 @@ export default function WorkoutCard({ workout }: WorkoutCardProps) {
   return (
     <li>
       <Link to={`/entrenamiento/${workout.id}`} className="workout-card">
-        <span className="workout-card__date">{formatWorkoutDate(workout.date)}</span>
-        <span className="workout-card__meta">
-          {workout.sets.length} {setLabel}
+        <span className="workout-card__content">
+          <span className="workout-card__date">{formatWorkoutDate(workout.date)}</span>
+          <span className="workout-card__meta">
+            {workout.sets.length} {setLabel}
+          </span>
+        </span>
+        <span className="workout-card__arrow" aria-hidden>
+          →
         </span>
       </Link>
     </li>

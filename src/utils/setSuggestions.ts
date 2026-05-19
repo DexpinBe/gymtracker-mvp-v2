@@ -20,7 +20,7 @@ export function getUniqueExerciseNames(workouts: Workout[]): string[] {
   return [...names].sort((a, b) => a.localeCompare(b, 'es'));
 }
 
-export function getLastSetForExercise(
+function getLastSetForExercise(
   workouts: Workout[],
   exerciseName: string,
 ): WorkoutSet | undefined {

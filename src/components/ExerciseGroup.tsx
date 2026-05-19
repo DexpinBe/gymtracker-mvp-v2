@@ -8,12 +8,13 @@ type ExerciseGroupProps = {
 
 export default function ExerciseGroup({ exerciseName, sets, onAddSeries }: ExerciseGroupProps) {
   return (
-    <section className="exercise-group">
+    <section className="card exercise-group">
       <h3 className="exercise-group__title">{exerciseName}</h3>
       <ul className="set-list">
         {sets.map((set) => (
           <li key={set.id} className="set-item">
-            Serie {set.setNumber}: {set.reps} reps · {set.weightKg} kg
+            <span className="set-item__highlight">Serie {set.setNumber}</span>: {set.reps} reps ·{' '}
+            {set.weightKg} kg
           </li>
         ))}
       </ul>

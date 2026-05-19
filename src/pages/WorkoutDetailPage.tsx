@@ -22,8 +22,12 @@ export default function WorkoutDetailPage() {
   if (!id || !workout) {
     return (
       <section className="page">
-        <h1>Entrenamiento no encontrado</h1>
-        <p className="empty-state">No existe este entrenamiento o fue eliminado.</p>
+        <header className="page-header">
+          <h1 className="page-title">Entrenamiento no encontrado</h1>
+        </header>
+        <div className="card card--muted">
+          <p className="empty-state">No existe este entrenamiento o fue eliminado.</p>
+        </div>
         <Link to="/" className="text-link">
           Volver al inicio
         </Link>
@@ -41,10 +45,17 @@ export default function WorkoutDetailPage() {
 
   return (
     <section className="page">
-      <h1 className="workout-detail__title">{formatWorkoutDate(workout.date)}</h1>
+      <header className="page-header">
+        <h1 className="page-title workout-detail__title">{formatWorkoutDate(workout.date)}</h1>
+        <p className="page-subtitle">
+          {workout.sets.length} {workout.sets.length === 1 ? 'serie registrada' : 'series registradas'}
+        </p>
+      </header>
 
       {workout.sets.length === 0 ? (
-        <p className="empty-state">Aún no hay series en este entrenamiento.</p>
+        <div className="card card--muted">
+          <p className="empty-state">Aún no hay series en este entrenamiento.</p>
+        </div>
       ) : (
         <div className="exercise-groups">
           {exerciseGroups.map(([name, sets]) => (

@@ -7,7 +7,11 @@ export default function Layout() {
   return (
     <div className="app">
       <header className="app-header">
-        <p className="app-brand">GymTracker</p>
+        <p className="app-brand">
+          <span className="app-brand__dot" aria-hidden />
+          GymTracker
+        </p>
+        <p className="app-tagline">Registra tu progreso</p>
       </header>
 
       <main className="app-main">

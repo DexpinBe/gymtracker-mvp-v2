@@ -16,9 +16,12 @@ export default function NewWorkoutPage() {
 
   return (
     <section className="page">
-      <h1>Nuevo entrenamiento</h1>
+      <header className="page-header">
+        <h1 className="page-title">Nuevo entrenamiento</h1>
+        <p className="page-subtitle">Elige la fecha del entrenamiento</p>
+      </header>
 
-      <form className="workout-form" onSubmit={handleSubmit}>
+      <form className="card workout-form" onSubmit={handleSubmit}>
         <label className="form-field">
           <span>Fecha</span>
           <input

@@ -15,16 +15,23 @@ export default function HomePage() {
 
   return (
     <section className="page">
-      <h1>Inicio</h1>
+      <header className="page-header">
+        <h1 className="page-title">Inicio</h1>
+        <p className="page-subtitle">Resumen de tu actividad reciente</p>
+      </header>
 
-      <button type="button" className="btn btn--primary" onClick={handleCreateToday}>
-        Crear entrenamiento de hoy
-      </button>
+      <div className="card card--action">
+        <button type="button" className="btn btn--primary" onClick={handleCreateToday}>
+          Crear entrenamiento de hoy
+        </button>
+      </div>
 
       {recentWorkouts.length === 0 ? (
-        <p className="empty-state">
-          Aún no tienes entrenamientos registrados. Crea el primero con el botón de arriba.
-        </p>
+        <div className="card card--muted">
+          <p className="empty-state">
+            Aún no tienes entrenamientos registrados. Crea el primero con el botón de arriba.
+          </p>
+        </div>
       ) : (
         <>
           <h2 className="section-title">Últimos entrenamientos</h2>

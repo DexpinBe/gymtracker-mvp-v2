@@ -7,12 +7,17 @@ export default function HistoryPage() {
 
   return (
     <section className="page">
-      <h1>Historial</h1>
+      <header className="page-header">
+        <h1 className="page-title">Historial</h1>
+        <p className="page-subtitle">Todos tus entrenamientos</p>
+      </header>
 
       {workouts.length === 0 ? (
-        <p className="empty-state">
-          No hay entrenamientos en el historial. Crea uno desde Inicio o Nuevo entrenamiento.
-        </p>
+        <div className="card card--muted">
+          <p className="empty-state">
+            No hay entrenamientos en el historial. Crea uno desde Inicio o Nuevo entrenamiento.
+          </p>
+        </div>
       ) : (
         <ul className="workout-list">
           {workouts.map((workout) => (
